@@ -19,6 +19,13 @@ function inputDigit(digit) {
 }
 
 function inputDecimal(dot) {
+
+    if (calculator.waitingForSecondOperand === true){
+        calculator.displayValue = '0.';
+        calculator.waitingForSecondOperand = true;
+        return;
+    }
+
     if (!calculator.displayValue.includes(dot)){
         //append decimal point
         calculator.displayValue += dot;
@@ -85,31 +92,32 @@ const keys = document.querySelector('#calculator-keys');
 keys.addEventListener('click', (event) => {
   // Access the clicked element
   const { target } = event;
-
+  const { value } = target;
   // Check if the clicked element is a button.
   // If not, exit from the function
   if (!target.matches('button')) {
     return;
   }
 
-  if (target.classList.contains('operator')) {
-    handleOperator(target.value);
+    switch ( value ){
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+      case '=':
+          handleOperator(value);
+          break;
+      case '.':
+          inputDecimal(value);
+          break;
+      case 'all-clear':
+          resetCalculator();
+          break;
+      default:
+        // check if the key is integer
+        if (Number.isInteger(parseFloat(value))){
+            inputDigit(value);
+        }
+    }
     updateScreen();
-    return;
-  }
-
-  if (target.classList.contains('decimal')) {
-    inputDecimal(target.value);
-    updateScreen();
-    return;
-  }
-
-  if (target.classList.contains('all-clear')) {
-    resetCalculator();
-    updateScreen();
-    return;
-  }
-
-  inputDigit(target.value);
-  updateScreen();
 });
