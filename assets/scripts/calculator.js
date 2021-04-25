@@ -30,12 +30,17 @@ function handleOperator(nextOperator) {
     // parsefloat converts the string content of displayValue to a floating-point number
     const inputValue = parseFloat(displayValue);
 
+    if (operator && calculator.waitingForSecondOperand){
+        calculator.operator = nextOperator;
+        console.log(calculator);
+        return;
+    }
+
     // verify the firstOperand is null and the value is not NaN
     if (firstOperand === null && !isNaN(inputValue)) {
         calculator.firstOperand = inputValue;
     } else if(operator){
         const result = calculate(firstOperand, inputValue, operator);
-
         calculator.displayValue = String(result);
         calculator.firstOperand = result;
     }
@@ -56,6 +61,14 @@ function calculate (firstOperand, secondOperand, operator) {
     }
 
     return secondOperand;
+}
+
+function resetCalculator(){
+    calculator.displayValue = '0';
+    calculator.firstOperand = null;
+    calculator.waitingForSecondOperand = false;
+    calculator.operator = null;
+    console.log(calculator);
 }
 
 function updateScreen() {
@@ -92,7 +105,8 @@ keys.addEventListener('click', (event) => {
   }
 
   if (target.classList.contains('all-clear')) {
-    console.log('clear', target.value);
+    resetCalculator();
+    updateScreen();
     return;
   }
 
